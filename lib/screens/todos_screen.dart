@@ -12,7 +12,14 @@ class TodosScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Flutter Todo'),
       ),
-      body: TodosList(),
+      body: TodosList(
+        onEdit: (Todo todo) {
+          showTodoForm(
+            context,
+            todo,
+          );
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {

@@ -7,6 +7,7 @@ class TodoCard extends StatelessWidget {
   final String title;
   final Priority priority;
   final bool isDone;
+  final Function onEdit;
 
   const TodoCard({
     Key key,
@@ -14,6 +15,7 @@ class TodoCard extends StatelessWidget {
     @required this.title,
     @required this.priority,
     @required this.isDone,
+    @required this.onEdit,
   }) : super(key: key);
 
   @override
@@ -56,7 +58,7 @@ class TodoCard extends StatelessWidget {
           ),
           IconButton(
             icon: Icon(Icons.edit),
-            onPressed: () {},
+            onPressed: onEdit,
           )
         ],
       ),

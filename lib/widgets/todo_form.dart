@@ -146,7 +146,13 @@ class _TodoFormState extends State<TodoForm> {
       _isLoading = true;
     });
 
-    await Provider.of<Todos>(context, listen: false).addTodo(newTodo);
+    final todosProvider = Provider.of<Todos>(context, listen: false);
+
+    if (todo.id == '-1') {
+      await todosProvider.addTodo(newTodo);
+    } else {
+      await todosProvider.updateTodo(newTodo);
+    }
 
     setState(() {
       _isLoading = false;

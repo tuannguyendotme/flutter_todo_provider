@@ -45,4 +45,23 @@ class Todos with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future updateTodo(Todo todo) async {
+    final url = '${Configuration.FirebaseUrl}/todos/${todo.id}.json';
+    await http.put(
+      url,
+      body: json.encode({
+        'title': todo.title,
+        'content': todo.content,
+        'priority': todo.priority.toString(),
+        'isDone': todo.isDone,
+        'userId': todo.userId,
+      }),
+    );
+
+    final index = _items.indexWhere((t) => t.id == todo.id);
+    _items[index] = todo;
+
+    notifyListeners();
+  }
 }

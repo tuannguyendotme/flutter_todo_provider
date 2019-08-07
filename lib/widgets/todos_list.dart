@@ -6,6 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:flutter_todo_provider/providers/todos.dart';
 
 class TodosList extends StatelessWidget {
+  final Function onEdit;
+
+  const TodosList({@required this.onEdit});
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -27,6 +31,7 @@ class TodosList extends StatelessWidget {
                         title: todo.title,
                         priority: todo.priority,
                         isDone: todo.isDone,
+                        onEdit: () => onEdit(todo),
                       );
                     },
                   ),
