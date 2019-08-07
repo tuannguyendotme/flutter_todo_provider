@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_todo_provider/models/priority.dart';
-import 'package:flutter_todo_provider/widgets/helpers.dart';
+import 'package:flutter_todo_provider/ui_helper.dart';
 
 class TodoCard extends StatelessWidget {
   final String id;
@@ -23,7 +23,7 @@ class TodoCard extends StatelessWidget {
         children: <Widget>[
           Container(
             decoration: new BoxDecoration(
-              color: getPriorityColor(priority),
+              color: UIHelper.getPriorityColor(priority),
               borderRadius: new BorderRadius.only(
                 topLeft: const Radius.circular(4.0),
                 bottomLeft: const Radius.circular(4.0),

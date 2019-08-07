@@ -25,6 +25,14 @@ class Todo {
         isDone = json['isDone'],
         userId = json['userId'];
 
+  Todo.initial(String userId)
+      : id = '-1',
+        title = '',
+        content = '',
+        priority = Priority.Low,
+        isDone = false,
+        this.userId = userId;
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
@@ -35,6 +43,7 @@ class Todo {
       };
 
   Todo copyWith({
+    String id,
     String title,
     String content,
     Priority priority,
@@ -42,7 +51,7 @@ class Todo {
     String userId,
   }) {
     return Todo(
-      id: this.id,
+      id: id ?? this.id,
       title: title ?? this.title,
       content: content ?? this.content,
       priority: priority ?? this.priority,

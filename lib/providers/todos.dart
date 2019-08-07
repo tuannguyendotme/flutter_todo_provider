@@ -24,4 +24,25 @@ class Todos with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future addTodo(Todo todo) async {
+    final url = '${Configuration.FirebaseUrl}/todos.json';
+    final response = await http.post(
+      url,
+      body: json.encode({
+        'title': todo.title,
+        'content': todo.content,
+        'priority': todo.priority.toString(),
+        'isDone': todo.isDone,
+        'userId': todo.userId,
+      }),
+    );
+
+    todo.copyWith(
+      id: json.decode(response.body)['name'],
+    );
+    _items.add(todo);
+
+    notifyListeners();
+  }
 }
