@@ -64,4 +64,13 @@ class Todos with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future removeTodo(String id) async {
+    final url = '${Configuration.FirebaseUrl}/todos/$id.json';
+    await http.delete(url);
+
+    _items.removeWhere((t) => t.id == id);
+
+    notifyListeners();
+  }
 }

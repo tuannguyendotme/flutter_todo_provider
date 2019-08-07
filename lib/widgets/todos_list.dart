@@ -12,8 +12,10 @@ class TodosList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final todosProvider = Provider.of<Todos>(context, listen: false);
+
     return FutureBuilder(
-      future: Provider.of<Todos>(context, listen: false).fetchTodos(),
+      future: todosProvider.fetchTodos(),
       builder: (context, snapshot) =>
           snapshot.connectionState == ConnectionState.waiting
               ? Center(
@@ -25,13 +27,30 @@ class TodosList extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final todo = todosData.items[index];
 
-                      return TodoCard(
+                      return Dismissible(
                         key: ValueKey(todo.id),
-                        id: todo.id,
-                        title: todo.title,
-                        priority: todo.priority,
-                        isDone: todo.isDone,
-                        onEdit: () => onEdit(todo),
+                        child: TodoCard(
+                          id: todo.id,
+                          title: todo.title,
+                          priority: todo.priority,
+                          isDone: todo.isDone,
+                          onEdit: () => onEdit(todo),
+                        ),
+                        onDismissed: (direction) {
+                          todosProvider.removeTodo(todo.id);
+                        },
+                        background: Container(
+                          color: Colors.red,
+                          child: Icon(Icons.delete),
+                          alignment: Alignment.centerLeft,
+                          padding: EdgeInsets.only(left: 16),
+                        ),
+                        secondaryBackground: Container(
+                          color: Colors.red,
+                          child: Icon(Icons.delete),
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.only(right: 16),
+                        ),
                       );
                     },
                   ),
