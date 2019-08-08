@@ -7,13 +7,38 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
+import 'package:flutter_todo_provider/models/filter.dart';
 
 class Todos with ChangeNotifier {
   List<Todo> _items = [];
+  Filter _filter = Filter.All;
 
-  UnmodifiableListView<Todo> get items => UnmodifiableListView(_items);
+  UnmodifiableListView<Todo> get items {
+    switch (_filter) {
+      case Filter.Done:
+        final filteredItems = _items.where((t) => t.isDone).toList();
+        return UnmodifiableListView(filteredItems);
+
+      case Filter.NotDone:
+        final filteredItems = _items.where((t) => !t.isDone).toList();
+        return UnmodifiableListView(filteredItems);
+
+      default:
+        return UnmodifiableListView(_items);
+    }
+  }
+
+  Filter get filter => _filter;
+
+  void applyFilter(Filter newFilter) {
+    _filter = newFilter;
+
+    notifyListeners();
+  }
 
   Future fetchTodos() async {
+    print('fetchTodos');
+
     final url = '${Configuration.FirebaseUrl}/todos.json';
     final response = await http.get(url);
     final todosData = json.decode(response.body) as Map<String, dynamic>;

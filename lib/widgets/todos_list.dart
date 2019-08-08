@@ -1,21 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_provider/widgets/todo_card.dart';
 
 import 'package:provider/provider.dart';
 
 import 'package:flutter_todo_provider/providers/todos.dart';
+import 'package:flutter_todo_provider/widgets/todo_card.dart';
 
-class TodosList extends StatelessWidget {
+class TodosList extends StatefulWidget {
   final Function onEdit;
 
   const TodosList({@required this.onEdit});
 
   @override
-  Widget build(BuildContext context) {
-    final todosProvider = Provider.of<Todos>(context, listen: false);
+  _TodosListState createState() => _TodosListState();
+}
 
+class _TodosListState extends State<TodosList> {
+  Todos _todosProvider;
+  Future<dynamic> _todos;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _todosProvider = Provider.of<Todos>(context, listen: false);
+    _todos = _todosProvider.fetchTodos();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return FutureBuilder(
-      future: todosProvider.fetchTodos(),
+      future: _todos,
       builder: (context, snapshot) =>
           snapshot.connectionState == ConnectionState.waiting
               ? Center(
@@ -34,10 +48,10 @@ class TodosList extends StatelessWidget {
                           title: todo.title,
                           priority: todo.priority,
                           isDone: todo.isDone,
-                          onEdit: () => onEdit(todo),
+                          onEdit: () => widget.onEdit(todo),
                         ),
                         onDismissed: (direction) {
-                          todosProvider.removeTodo(todo.id);
+                          _todosProvider.removeTodo(todo.id);
                         },
                         background: Container(
                           color: Colors.red,

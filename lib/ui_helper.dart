@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'package:flutter_todo_provider/models/priority.dart';
 
 class UIHelper {
