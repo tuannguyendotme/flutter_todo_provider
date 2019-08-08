@@ -53,6 +53,7 @@ class _TodosListState extends State<TodosList> {
                         onDismissed: (direction) {
                           _todosProvider.removeTodo(todo.id);
                         },
+                        confirmDismiss: confirmRemove,
                         background: Container(
                           color: Colors.red,
                           child: Icon(Icons.delete),
@@ -69,6 +70,30 @@ class _TodosListState extends State<TodosList> {
                     },
                   ),
                 ),
+    );
+  }
+
+  Future<bool> confirmRemove(DismissDirection direction) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirm'),
+        content: Text('Are you sure to remove this todo?'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('No'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          FlatButton(
+            child: Text('Yes'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          )
+        ],
+      ),
     );
   }
 }
