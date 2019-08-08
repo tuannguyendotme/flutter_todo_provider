@@ -51,12 +51,22 @@ class _TodosListState extends State<TodosList> {
                           onEdit: () => widget.onEdit(todo),
                         ),
                         onDismissed: (direction) {
-                          _todosProvider.removeTodo(todo.id);
+                          if (direction == DismissDirection.endToStart) {
+                            _todosProvider.removeTodo(todo.id);
+                          }
                         },
-                        confirmDismiss: confirmRemove,
+                        confirmDismiss: (direction) {
+                          if (direction == DismissDirection.endToStart) {
+                            return confirmRemove();
+                          } else {
+                            return toggleDone(todo.id);
+                          }
+                        },
                         background: Container(
-                          color: Colors.red,
-                          child: Icon(Icons.delete),
+                          color: Colors.green,
+                          child: Icon(todo.isDone
+                              ? Icons.check_box_outline_blank
+                              : Icons.check),
                           alignment: Alignment.centerLeft,
                           padding: EdgeInsets.only(left: 16),
                         ),
@@ -73,7 +83,7 @@ class _TodosListState extends State<TodosList> {
     );
   }
 
-  Future<bool> confirmRemove(DismissDirection direction) {
+  Future<bool> confirmRemove() {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -95,5 +105,11 @@ class _TodosListState extends State<TodosList> {
         ],
       ),
     );
+  }
+
+  Future<bool> toggleDone(String todoId) {
+    _todosProvider.toggleDone(todoId);
+
+    return Future.value(false);
   }
 }

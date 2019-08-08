@@ -63,10 +63,10 @@ class Todos with ChangeNotifier {
       }),
     );
 
-    todo.copyWith(
+    final newTodo = todo.copyWith(
       id: json.decode(response.body)['name'],
     );
-    _items.add(todo);
+    _items.add(newTodo);
 
     notifyListeners();
   }
@@ -97,5 +97,26 @@ class Todos with ChangeNotifier {
     _items.removeWhere((t) => t.id == id);
 
     notifyListeners();
+  }
+
+  Future toggleDone(String id) async {
+    final todo = _items.firstWhere((t) => t.id == id);
+    final updatedTodo = todo.copyWith(isDone: !todo.isDone);
+    final index = _items.indexWhere((t) => t.id == todo.id);
+
+    _items[index] = updatedTodo;
+    notifyListeners();
+
+    final url = '${Configuration.FirebaseUrl}/todos/$id.json';
+    await http.put(
+      url,
+      body: json.encode({
+        'title': updatedTodo.title,
+        'content': updatedTodo.content,
+        'priority': updatedTodo.priority.toString(),
+        'isDone': updatedTodo.isDone,
+        'userId': updatedTodo.userId,
+      }),
+    );
   }
 }
