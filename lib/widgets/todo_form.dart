@@ -21,6 +21,7 @@ class _TodoFormState extends State<TodoForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Todo todo;
   bool _isLoading = false;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -61,6 +62,16 @@ class _TodoFormState extends State<TodoForm> {
             ],
           ),
           UIHelper.verticalSpaceMedium,
+          if (_hasError)
+            Center(
+              child: Text(
+                'Fail to save todo.',
+                style: TextStyle(
+                  color: Theme.of(context).errorColor,
+                ),
+              ),
+            ),
+          if (_hasError) UIHelper.verticalSpaceMedium,
           _isLoading
               ? Center(
                   child: CircularProgressIndicator(),
@@ -150,16 +161,24 @@ class _TodoFormState extends State<TodoForm> {
 
     final todosProvider = Provider.of<Todos>(context, listen: false);
 
-    if (todo.id == '-1') {
-      await todosProvider.addTodo(newTodo);
-    } else {
-      await todosProvider.updateTodo(newTodo);
+    try {
+      if (todo.id == '-1') {
+        await todosProvider.addTodo(newTodo);
+      } else {
+        await todosProvider.updateTodo(newTodo);
+      }
+    } catch (e) {
+      setState(() {
+        _hasError = true;
+      });
     }
 
     setState(() {
       _isLoading = false;
     });
 
-    Navigator.pop(context);
+    if (!_hasError) {
+      Navigator.pop(context);
+    }
   }
 }

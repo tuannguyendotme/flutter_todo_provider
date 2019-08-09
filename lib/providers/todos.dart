@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
 import 'package:flutter_todo_provider/models/filter.dart';
+import 'package:flutter_todo_provider/http_exception.dart';
 
 class Todos with ChangeNotifier {
   List<Todo> _items = [];
@@ -37,17 +38,20 @@ class Todos with ChangeNotifier {
   }
 
   Future fetchTodos() async {
-    print('fetchTodos');
-
     final url = '${Configuration.FirebaseUrl}/todos.json';
     final response = await http.get(url);
-    final todosData = json.decode(response.body) as Map<String, dynamic>;
 
-    todosData.forEach((String id, dynamic json) {
-      _items.add(Todo.fromJson(id, json));
-    });
+    try {
+      final todosData = json.decode(response.body) as Map<String, dynamic>;
 
-    notifyListeners();
+      todosData.forEach((String id, dynamic json) {
+        _items.add(Todo.fromJson(id, json));
+      });
+
+      notifyListeners();
+    } catch (e) {
+      throw HttpException('Fail to fetch todos');
+    }
   }
 
   Future addTodo(Todo todo) async {
@@ -91,24 +95,35 @@ class Todos with ChangeNotifier {
   }
 
   Future removeTodo(String id) async {
-    final url = '${Configuration.FirebaseUrl}/todos/$id.json';
-    await http.delete(url);
+    final index = _items.indexWhere((t) => t.id == id);
+    var todo = _items[index];
 
-    _items.removeWhere((t) => t.id == id);
-
+    _items.removeAt(index);
     notifyListeners();
+
+    final url = '${Configuration.FirebaseUrl}/todos/$id.json';
+    final response = await http.delete(url);
+
+    if (response.statusCode >= 400) {
+      _items.insert(index, todo);
+      notifyListeners();
+
+      throw HttpException('Fail to remove todo.');
+    }
+
+    todo = null;
   }
 
   Future toggleDone(String id) async {
-    final todo = _items.firstWhere((t) => t.id == id);
-    final updatedTodo = todo.copyWith(isDone: !todo.isDone);
+    var todo = _items.firstWhere((t) => t.id == id);
+    var updatedTodo = todo.copyWith(isDone: !todo.isDone);
     final index = _items.indexWhere((t) => t.id == todo.id);
 
     _items[index] = updatedTodo;
     notifyListeners();
 
     final url = '${Configuration.FirebaseUrl}/todos/$id.json';
-    await http.put(
+    final response = await http.put(
       url,
       body: json.encode({
         'title': updatedTodo.title,
@@ -118,5 +133,15 @@ class Todos with ChangeNotifier {
         'userId': updatedTodo.userId,
       }),
     );
+
+    if (response.statusCode >= 400) {
+      _items[index] = todo;
+      notifyListeners();
+
+      throw HttpException('Fail to remove todo.');
+    }
+
+    todo = null;
+    updatedTodo = null;
   }
 }

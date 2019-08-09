@@ -77,7 +77,7 @@ class _TodosScreenState extends State<TodosScreen> {
       context: context,
       builder: (context) => Container(
         color: Color(0xFF737373),
-        height: 400,
+        height: 420,
         child: Container(
           padding: UIHelper.padding,
           child: TodoForm(todo),

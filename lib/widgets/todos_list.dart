@@ -29,57 +29,73 @@ class _TodosListState extends State<TodosList> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
+      initialData: [],
       future: _todos,
-      builder: (context, snapshot) =>
-          snapshot.connectionState == ConnectionState.waiting
-              ? Center(
-                  child: CircularProgressIndicator(),
-                )
-              : Consumer<Todos>(
-                  builder: (context, todosData, child) => ListView.builder(
-                    itemCount: todosData.items.length,
-                    itemBuilder: (context, index) {
-                      final todo = todosData.items[index];
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(snapshot.error.toString()),
+          );
+        }
 
-                      return Dismissible(
-                        key: ValueKey(todo.id),
-                        child: TodoCard(
-                          id: todo.id,
-                          title: todo.title,
-                          priority: todo.priority,
-                          isDone: todo.isDone,
-                          onEdit: () => widget.onEdit(todo),
-                        ),
-                        onDismissed: (direction) {
-                          if (direction == DismissDirection.endToStart) {
-                            _todosProvider.removeTodo(todo.id);
+        return snapshot.connectionState == ConnectionState.waiting
+            ? Center(
+                child: CircularProgressIndicator(),
+              )
+            : Consumer<Todos>(
+                builder: (context, todosData, child) => ListView.builder(
+                  itemCount: todosData.items.length,
+                  itemBuilder: (context, index) {
+                    final todo = todosData.items[index];
+
+                    return Dismissible(
+                      key: ValueKey(todo.id),
+                      child: TodoCard(
+                        id: todo.id,
+                        title: todo.title,
+                        priority: todo.priority,
+                        isDone: todo.isDone,
+                        onEdit: () => widget.onEdit(todo),
+                      ),
+                      onDismissed: (direction) async {
+                        if (direction == DismissDirection.endToStart) {
+                          try {
+                            await _todosProvider.removeTodo(todo.id);
+                          } catch (e) {
+                            Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Fail to remove todo'),
+                              ),
+                            );
                           }
-                        },
-                        confirmDismiss: (direction) {
-                          if (direction == DismissDirection.endToStart) {
-                            return confirmRemove();
-                          } else {
-                            return toggleDone(todo.id);
-                          }
-                        },
-                        background: Container(
-                          color: Colors.green,
-                          child: Icon(todo.isDone
-                              ? Icons.check_box_outline_blank
-                              : Icons.check),
-                          alignment: Alignment.centerLeft,
-                          padding: EdgeInsets.only(left: 16),
-                        ),
-                        secondaryBackground: Container(
-                          color: Colors.red,
-                          child: Icon(Icons.delete),
-                          alignment: Alignment.centerRight,
-                          padding: EdgeInsets.only(right: 16),
-                        ),
-                      );
-                    },
-                  ),
+                        }
+                      },
+                      confirmDismiss: (direction) {
+                        if (direction == DismissDirection.endToStart) {
+                          return confirmRemove();
+                        } else {
+                          return toggleDone(todo.id);
+                        }
+                      },
+                      background: Container(
+                        color: Colors.green,
+                        child: Icon(todo.isDone
+                            ? Icons.check_box_outline_blank
+                            : Icons.check),
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(left: 16),
+                      ),
+                      secondaryBackground: Container(
+                        color: Colors.red,
+                        child: Icon(Icons.delete),
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.only(right: 16),
+                      ),
+                    );
+                  },
                 ),
+              );
+      },
     );
   }
 
@@ -107,8 +123,14 @@ class _TodosListState extends State<TodosList> {
     );
   }
 
-  Future<bool> toggleDone(String todoId) {
-    _todosProvider.toggleDone(todoId);
+  Future<bool> toggleDone(String todoId) async {
+    try {
+      await _todosProvider.toggleDone(todoId);
+    } catch (e) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Fail to update todo status.'),
+      ));
+    }
 
     return Future.value(false);
   }
