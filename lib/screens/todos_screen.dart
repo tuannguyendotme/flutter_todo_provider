@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_todo_provider/models/filter.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
 import 'package:flutter_todo_provider/providers/todos.dart';
+import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/ui_helper.dart';
 import 'package:flutter_todo_provider/widgets/todo_form.dart';
 import 'package:flutter_todo_provider/widgets/todos_list.dart';
 import 'package:provider/provider.dart';
 
 class TodosScreen extends StatefulWidget {
+  static const String routeName = '/todos';
+
   @override
   _TodosScreenState createState() => _TodosScreenState();
 }
@@ -48,6 +51,29 @@ class _TodosScreenState extends State<TodosScreen> {
               todosProvider.applyFilter(filter);
 
               setState(() {});
+            },
+          ),
+          PopupMenuButton<String>(
+            onSelected: (String choice) {
+              switch (choice) {
+                case 'Settings':
+                  Navigator.of(context).pushNamed(SettingsScreen.routeName);
+                  break;
+
+                case 'LogOut':
+              }
+            },
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                  value: 'Settings',
+                  child: Text('Settings'),
+                ),
+                PopupMenuItem<String>(
+                  value: 'LogOut',
+                  child: Text('Log out'),
+                ),
+              ];
             },
           ),
         ],

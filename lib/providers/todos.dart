@@ -105,7 +105,7 @@ class Todos with ChangeNotifier {
     final response = await http.delete(url);
 
     if (response.statusCode >= 400) {
-      _items.insert(index, todo);
+      _items[index] = todo;
       notifyListeners();
 
       throw HttpException('Fail to remove todo.');
