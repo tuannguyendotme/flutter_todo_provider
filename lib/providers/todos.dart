@@ -9,10 +9,14 @@ import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
 import 'package:flutter_todo_provider/models/filter.dart';
 import 'package:flutter_todo_provider/http_exception.dart';
+import 'package:flutter_todo_provider/providers/account.dart';
 
 class Todos with ChangeNotifier {
+  final Account account;
   List<Todo> _items = [];
   Filter _filter = Filter.All;
+
+  Todos(this.account);
 
   UnmodifiableListView<Todo> get items {
     switch (_filter) {
@@ -38,7 +42,8 @@ class Todos with ChangeNotifier {
   }
 
   Future fetchTodos() async {
-    final url = '${Configuration.FirebaseUrl}/todos.json';
+    final url =
+        '${Configuration.FirebaseUrl}/todos.json?auth=${account.token}&orderBy="userId"&equalTo="${account.userId}"';
     final response = await http.get(url);
 
     try {
@@ -55,7 +60,7 @@ class Todos with ChangeNotifier {
   }
 
   Future addTodo(Todo todo) async {
-    final url = '${Configuration.FirebaseUrl}/todos.json';
+    final url = '${Configuration.FirebaseUrl}/todos.json?auth=${account.token}';
     final response = await http.post(
       url,
       body: json.encode({
@@ -76,7 +81,8 @@ class Todos with ChangeNotifier {
   }
 
   Future updateTodo(Todo todo) async {
-    final url = '${Configuration.FirebaseUrl}/todos/${todo.id}.json';
+    final url =
+        '${Configuration.FirebaseUrl}/todos/${todo.id}.json?auth=${account.token}';
     await http.put(
       url,
       body: json.encode({
@@ -101,7 +107,8 @@ class Todos with ChangeNotifier {
     _items.removeAt(index);
     notifyListeners();
 
-    final url = '${Configuration.FirebaseUrl}/todos/$id.json';
+    final url =
+        '${Configuration.FirebaseUrl}/todos/$id.json?auth=${account.token}';
     final response = await http.delete(url);
 
     if (response.statusCode >= 400) {
@@ -122,7 +129,8 @@ class Todos with ChangeNotifier {
     _items[index] = updatedTodo;
     notifyListeners();
 
-    final url = '${Configuration.FirebaseUrl}/todos/$id.json';
+    final url =
+        '${Configuration.FirebaseUrl}/todos/$id.json?auth=${account.token}';
     final response = await http.put(
       url,
       body: json.encode({

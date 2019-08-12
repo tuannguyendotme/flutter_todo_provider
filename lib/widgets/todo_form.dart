@@ -162,7 +162,7 @@ class _TodoFormState extends State<TodoForm> {
     final todosProvider = Provider.of<Todos>(context, listen: false);
 
     try {
-      if (todo.id == '-1') {
+      if (todo.id == null) {
         await todosProvider.addTodo(newTodo);
       } else {
         await todosProvider.updateTodo(newTodo);

@@ -26,7 +26,7 @@ class Todo {
         userId = json['userId'];
 
   Todo.initial(String userId)
-      : id = '-1',
+      : id = null,
         title = '',
         content = '',
         priority = Priority.Low,

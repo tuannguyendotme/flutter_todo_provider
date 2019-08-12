@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_provider/providers/account.dart';
 
+import 'package:provider/provider.dart';
+
+import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/models/filter.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
 import 'package:flutter_todo_provider/providers/todos.dart';
-import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/ui_helper.dart';
+import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/widgets/todo_form.dart';
 import 'package:flutter_todo_provider/widgets/todos_list.dart';
-import 'package:provider/provider.dart';
 
 class TodosScreen extends StatefulWidget {
   static const String routeName = '/todos';
@@ -24,7 +27,7 @@ class _TodosScreenState extends State<TodosScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter Todo'),
+        title: Text(Configuration.AppName),
         actions: <Widget>[
           PopupMenuButton<Filter>(
             icon: Icon(Icons.filter_list),
@@ -89,9 +92,11 @@ class _TodosScreenState extends State<TodosScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
+          final account = Provider.of<Account>(context, listen: false);
+
           showTodoForm(
             context,
-            Todo.initial('ZNTkiZIxP8UxwoNyqXqx5ruIkDC3'),
+            Todo.initial(account.userId),
           );
         },
       ),

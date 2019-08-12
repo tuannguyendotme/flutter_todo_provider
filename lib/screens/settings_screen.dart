@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_provider/providers/settings.dart';
+
 import 'package:provider/provider.dart';
+
+import 'package:flutter_todo_provider/.env.dart';
+import 'package:flutter_todo_provider/providers/settings.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const String routeName = '/settings';
@@ -9,9 +12,7 @@ class SettingsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'Flutter Todo',
-        ),
+        title: Text(Configuration.AppName),
         actions: <Widget>[
           PopupMenuButton<String>(
             onSelected: (String choice) {
