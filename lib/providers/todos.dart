@@ -146,7 +146,7 @@ class Todos with ChangeNotifier {
       _items[index] = todo;
       notifyListeners();
 
-      throw HttpException('Fail to remove todo.');
+      throw HttpException('Fail to update todo status.');
     }
 
     todo = null;

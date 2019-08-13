@@ -40,7 +40,29 @@ class Account with ChangeNotifier {
     _refreshToken = responseData['refreshToken'];
     _expiryTime = expiryTime;
 
-    print(_userId);
+    notifyListeners();
+  }
+
+  Future signUp(String email, String password) async {
+    final response = await http.post(
+      'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=${Configuration.ApiKey}',
+      body: json.encode({
+        'email': email,
+        'password': password,
+        'returnSecureToken': true,
+      }),
+      headers: {'Content-Type': 'application/json'},
+    );
+
+    final responseData = json.decode(response.body) as Map<String, dynamic>;
+    final DateTime expiryTime = DateTime.now()
+        .add(Duration(seconds: int.parse(responseData['expiresIn'])));
+
+    _userId = responseData['localId'];
+    _email = responseData['email'];
+    _token = responseData['idToken'];
+    _refreshToken = responseData['refreshToken'];
+    _expiryTime = expiryTime;
 
     notifyListeners();
   }

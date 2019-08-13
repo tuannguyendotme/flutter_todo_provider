@@ -24,6 +24,7 @@ class _AccountScreenState extends State<AccountScreen> {
     'email': null,
     'password': null,
   };
+  final TextEditingController _passwordController = TextEditingController();
   _FormMode _formMode = _FormMode.SignIn;
   bool _isLoading = false;
   bool _hasError = false;
@@ -46,6 +47,8 @@ class _AccountScreenState extends State<AccountScreen> {
                   children: <Widget>[
                     _buildEmailField(),
                     _buildPasswordField(),
+                    if (_formMode == _FormMode.SignUp)
+                      _buildConfirmPasswordField(),
                     UIHelper.verticalSpaceMedium,
                     if (_hasError)
                       Center(
@@ -115,7 +118,14 @@ class _AccountScreenState extends State<AccountScreen> {
         });
 
         final accountProvider = Provider.of<Account>(context, listen: false);
-        await accountProvider.signIn(_formData['email'], _formData['password']);
+
+        if (_formMode == _FormMode.SignIn) {
+          await accountProvider.signIn(
+              _formData['email'], _formData['password']);
+        } else {
+          await accountProvider.signUp(
+              _formData['email'], _formData['password']);
+        }
 
         setState(() {
           _isLoading = false;
@@ -147,12 +157,32 @@ class _AccountScreenState extends State<AccountScreen> {
   Widget _buildPasswordField() {
     return TextFormField(
       obscureText: true,
+      controller: _passwordController,
       decoration: InputDecoration(
         labelText: 'Password',
       ),
       validator: (value) {
         if (value.isEmpty) {
           return 'Please enter password';
+        }
+
+        return null;
+      },
+      onSaved: (value) {
+        _formData['password'] = value;
+      },
+    );
+  }
+
+  Widget _buildConfirmPasswordField() {
+    return TextFormField(
+      obscureText: true,
+      decoration: InputDecoration(
+        labelText: 'Confirm Password',
+      ),
+      validator: (value) {
+        if (value != _passwordController.text) {
+          return 'Password and confirm password are not matched.';
         }
 
         return null;

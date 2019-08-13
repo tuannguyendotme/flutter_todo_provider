@@ -92,11 +92,11 @@ class _TodosScreenState extends State<TodosScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          final account = Provider.of<Account>(context, listen: false);
+          final accountProvider = Provider.of<Account>(context, listen: false);
 
           showTodoForm(
             context,
-            Todo.initial(account.userId),
+            Todo.initial(accountProvider.userId),
           );
         },
       ),
