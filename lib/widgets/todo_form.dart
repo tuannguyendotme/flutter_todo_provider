@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_provider/http_exception.dart';
 
 import 'package:provider/provider.dart';
 
@@ -21,7 +22,7 @@ class _TodoFormState extends State<TodoForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   Todo todo;
   bool _isLoading = false;
-  bool _hasError = false;
+  String _errorMessage = '';
 
   @override
   void initState() {
@@ -62,16 +63,7 @@ class _TodoFormState extends State<TodoForm> {
             ],
           ),
           UIHelper.verticalSpaceMedium,
-          if (_hasError)
-            Center(
-              child: Text(
-                'Fail to save todo.',
-                style: TextStyle(
-                  color: Theme.of(context).errorColor,
-                ),
-              ),
-            ),
-          if (_hasError) UIHelper.verticalSpaceMedium,
+          if (_errorMessage != '') _buildErrorPlaceHolder(),
           _isLoading
               ? Center(
                   child: CircularProgressIndicator(),
@@ -79,6 +71,22 @@ class _TodoFormState extends State<TodoForm> {
               : _buildButtonRow(),
         ],
       ),
+    );
+  }
+
+  Widget _buildErrorPlaceHolder() {
+    return Column(
+      children: <Widget>[
+        Center(
+          child: Text(
+            _errorMessage,
+            style: TextStyle(
+              color: Theme.of(context).errorColor,
+            ),
+          ),
+        ),
+        UIHelper.verticalSpaceMedium
+      ],
     );
   }
 
@@ -157,6 +165,7 @@ class _TodoFormState extends State<TodoForm> {
 
     setState(() {
       _isLoading = true;
+      _errorMessage = '';
     });
 
     final todosProvider = Provider.of<Todos>(context, listen: false);
@@ -167,9 +176,9 @@ class _TodoFormState extends State<TodoForm> {
       } else {
         await todosProvider.updateTodo(newTodo);
       }
-    } catch (e) {
+    } on HttpException catch (e) {
       setState(() {
-        _hasError = true;
+        _errorMessage = e.message;
       });
     }
 
@@ -177,7 +186,7 @@ class _TodoFormState extends State<TodoForm> {
       _isLoading = false;
     });
 
-    if (!_hasError) {
+    if (_errorMessage == '') {
       Navigator.pop(context);
     }
   }

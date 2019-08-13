@@ -42,11 +42,17 @@ class Todos with ChangeNotifier {
   }
 
   Future fetchTodos() async {
+    const String message = 'Fail to fetch todos.';
     final url =
         '${Configuration.FirebaseUrl}/todos.json?auth=${account.token}&orderBy="userId"&equalTo="${account.userId}"';
-    final response = await http.get(url);
 
     try {
+      final response = await http.get(url);
+
+      if (response.statusCode >= 400) {
+        throw HttpException(message);
+      }
+
       final todosData = json.decode(response.body) as Map<String, dynamic>;
 
       todosData.forEach((String id, dynamic json) {
@@ -55,52 +61,74 @@ class Todos with ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      throw HttpException('Fail to fetch todos');
+      throw HttpException(message);
     }
   }
 
   Future addTodo(Todo todo) async {
+    const String message = 'Fail to create todo.';
     final url = '${Configuration.FirebaseUrl}/todos.json?auth=${account.token}';
-    final response = await http.post(
-      url,
-      body: json.encode({
-        'title': todo.title,
-        'content': todo.content,
-        'priority': todo.priority.toString(),
-        'isDone': todo.isDone,
-        'userId': todo.userId,
-      }),
-    );
 
-    final newTodo = todo.copyWith(
-      id: json.decode(response.body)['name'],
-    );
-    _items.add(newTodo);
+    try {
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'title': todo.title,
+          'content': todo.content,
+          'priority': todo.priority.toString(),
+          'isDone': todo.isDone,
+          'userId': todo.userId,
+        }),
+      );
 
-    notifyListeners();
+      if (response.statusCode >= 400) {
+        throw HttpException(message);
+      }
+
+      final newTodo = todo.copyWith(
+        id: json.decode(response.body)['name'],
+      );
+      _items.add(newTodo);
+
+      notifyListeners();
+    } catch (e) {
+      throw HttpException(message);
+    }
   }
 
   Future updateTodo(Todo todo) async {
+    const String message = 'Fail to update todo.';
     final url =
         '${Configuration.FirebaseUrl}/todos/${todo.id}.json?auth=${account.token}';
-    await http.put(
-      url,
-      body: json.encode({
-        'title': todo.title,
-        'content': todo.content,
-        'priority': todo.priority.toString(),
-        'isDone': todo.isDone,
-        'userId': todo.userId,
-      }),
-    );
 
-    final index = _items.indexWhere((t) => t.id == todo.id);
-    _items[index] = todo;
+    try {
+      final response = await http.put(
+        url,
+        body: json.encode({
+          'title': todo.title,
+          'content': todo.content,
+          'priority': todo.priority.toString(),
+          'isDone': todo.isDone,
+          'userId': todo.userId,
+        }),
+      );
 
-    notifyListeners();
+      if (response.statusCode >= 400) {
+        throw HttpException(message);
+      }
+
+      final index = _items.indexWhere((t) => t.id == todo.id);
+      _items[index] = todo;
+
+      notifyListeners();
+    } catch (e) {
+      throw HttpException(message);
+    }
   }
 
   Future removeTodo(String id) async {
+    const String message = 'Fail to remove todo.';
+
     final index = _items.indexWhere((t) => t.id == id);
     var todo = _items[index];
 
@@ -109,19 +137,29 @@ class Todos with ChangeNotifier {
 
     final url =
         '${Configuration.FirebaseUrl}/todos/$id.json?auth=${account.token}';
-    final response = await http.delete(url);
 
-    if (response.statusCode >= 400) {
+    try {
+      final response = await http.delete(url);
+
+      if (response.statusCode >= 400) {
+        _items[index] = todo;
+        notifyListeners();
+
+        throw HttpException(message);
+      }
+
+      todo = null;
+    } catch (e) {
       _items[index] = todo;
       notifyListeners();
 
-      throw HttpException('Fail to remove todo.');
+      throw HttpException(message);
     }
-
-    todo = null;
   }
 
   Future toggleDone(String id) async {
+    const String message = 'Fail to update todo status.';
+
     var todo = _items.firstWhere((t) => t.id == id);
     var updatedTodo = todo.copyWith(isDone: !todo.isDone);
     final index = _items.indexWhere((t) => t.id == todo.id);
@@ -131,25 +169,33 @@ class Todos with ChangeNotifier {
 
     final url =
         '${Configuration.FirebaseUrl}/todos/$id.json?auth=${account.token}';
-    final response = await http.put(
-      url,
-      body: json.encode({
-        'title': updatedTodo.title,
-        'content': updatedTodo.content,
-        'priority': updatedTodo.priority.toString(),
-        'isDone': updatedTodo.isDone,
-        'userId': updatedTodo.userId,
-      }),
-    );
 
-    if (response.statusCode >= 400) {
+    try {
+      final response = await http.put(
+        url,
+        body: json.encode({
+          'title': updatedTodo.title,
+          'content': updatedTodo.content,
+          'priority': updatedTodo.priority.toString(),
+          'isDone': updatedTodo.isDone,
+          'userId': updatedTodo.userId,
+        }),
+      );
+
+      if (response.statusCode >= 400) {
+        _items[index] = todo;
+        notifyListeners();
+
+        throw HttpException(message);
+      }
+
+      todo = null;
+      updatedTodo = null;
+    } catch (e) {
       _items[index] = todo;
       notifyListeners();
 
-      throw HttpException('Fail to update todo status.');
+      throw HttpException(message);
     }
-
-    todo = null;
-    updatedTodo = null;
   }
 }
