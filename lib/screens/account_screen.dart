@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_provider/http_exception.dart';
 
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,7 @@ class _AccountScreenState extends State<AccountScreen> {
   final TextEditingController _passwordController = TextEditingController();
   _FormMode _formMode = _FormMode.SignIn;
   bool _isLoading = false;
-  bool _hasError = false;
+  String _errorMessage = '';
 
   @override
   Widget build(BuildContext context) {
@@ -50,18 +51,7 @@ class _AccountScreenState extends State<AccountScreen> {
                     if (_formMode == _FormMode.SignUp)
                       _buildConfirmPasswordField(),
                     UIHelper.verticalSpaceMedium,
-                    if (_hasError)
-                      Center(
-                        child: Text(
-                          _formMode == _FormMode.SignIn
-                              ? 'Fail to sign in.'
-                              : 'Fail to sign up.',
-                          style: TextStyle(
-                            color: Theme.of(context).errorColor,
-                          ),
-                        ),
-                      ),
-                    if (_hasError) UIHelper.verticalSpaceMedium,
+                    if (_errorMessage != '') _buildErrorPlaceHolder(),
                     _isLoading
                         ? Center(
                             child: CircularProgressIndicator(),
@@ -80,6 +70,22 @@ class _AccountScreenState extends State<AccountScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildErrorPlaceHolder() {
+    return Column(
+      children: <Widget>[
+        Center(
+          child: Text(
+            _errorMessage,
+            style: TextStyle(
+              color: Theme.of(context).errorColor,
+            ),
+          ),
+        ),
+        UIHelper.verticalSpaceMedium
+      ],
     );
   }
 
@@ -115,16 +121,23 @@ class _AccountScreenState extends State<AccountScreen> {
 
         setState(() {
           _isLoading = true;
+          _errorMessage = '';
         });
 
         final accountProvider = Provider.of<Account>(context, listen: false);
 
-        if (_formMode == _FormMode.SignIn) {
-          await accountProvider.signIn(
-              _formData['email'], _formData['password']);
-        } else {
-          await accountProvider.signUp(
-              _formData['email'], _formData['password']);
+        try {
+          if (_formMode == _FormMode.SignIn) {
+            await accountProvider.signIn(
+                _formData['email'], _formData['password']);
+          } else {
+            await accountProvider.signUp(
+                _formData['email'], _formData['password']);
+          }
+        } on HttpException catch (e) {
+          setState(() {
+            _errorMessage = e.message;
+          });
         }
 
         setState(() {
