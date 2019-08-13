@@ -66,6 +66,16 @@ class Account with ChangeNotifier {
     notifyListeners();
   }
 
+  void signOut() {
+    _userId = null;
+    _email = null;
+    _token = null;
+    _refreshToken = null;
+    _expiryTime = null;
+
+    notifyListeners();
+  }
+
   Future signUp(String email, String password) async {
     final response = await http.post(
       'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=${Configuration.ApiKey}',

@@ -23,6 +23,7 @@ class _TodosScreenState extends State<TodosScreen> {
   @override
   Widget build(BuildContext context) {
     final todosProvider = Provider.of<Todos>(context, listen: false);
+    final accountProvider = Provider.of<Account>(context, listen: false);
     final currentFilter = todosProvider.filter;
 
     return Scaffold(
@@ -57,13 +58,20 @@ class _TodosScreenState extends State<TodosScreen> {
             },
           ),
           PopupMenuButton<String>(
-            onSelected: (String choice) {
+            onSelected: (String choice) async {
               switch (choice) {
                 case 'Settings':
                   Navigator.of(context).pushNamed(SettingsScreen.routeName);
                   break;
 
-                case 'LogOut':
+                case 'SignOut':
+                  final isSignOut = await confirmSigningOut(context);
+
+                  if (isSignOut) {
+                    accountProvider.signOut();
+                  }
+
+                  break;
               }
             },
             itemBuilder: (BuildContext context) {
@@ -73,8 +81,8 @@ class _TodosScreenState extends State<TodosScreen> {
                   child: Text('Settings'),
                 ),
                 PopupMenuItem<String>(
-                  value: 'LogOut',
-                  child: Text('Log out'),
+                  value: 'SignOut',
+                  child: Text('Sign out'),
                 ),
               ];
             },
@@ -92,13 +100,35 @@ class _TodosScreenState extends State<TodosScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          final accountProvider = Provider.of<Account>(context, listen: false);
-
           showTodoForm(
             context,
             Todo.initial(accountProvider.userId),
           );
         },
+      ),
+    );
+  }
+
+  Future<bool> confirmSigningOut(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirm'),
+        content: Text('Are you sure to signing out?'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('No'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          FlatButton(
+            child: Text('Yes'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          )
+        ],
       ),
     );
   }
