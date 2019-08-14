@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_provider/helpers/storage_helper.dart';
 
 import 'package:provider/provider.dart';
 
@@ -16,8 +17,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(
-          value: Account(),
+        Provider.value(
+          value: StorageHelper(),
+        ),
+        ChangeNotifierProxyProvider<StorageHelper, Account>(
+          builder: (context, storage, account) => Account(storage),
         ),
         ChangeNotifierProxyProvider<Account, Todos>(
           builder: (context, account, todos) => Todos(account),

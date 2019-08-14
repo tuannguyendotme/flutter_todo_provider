@@ -7,7 +7,7 @@ import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/models/filter.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
 import 'package:flutter_todo_provider/providers/todos.dart';
-import 'package:flutter_todo_provider/ui_helper.dart';
+import 'package:flutter_todo_provider/helpers/ui_helper.dart';
 import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/widgets/todo_form.dart';
 import 'package:flutter_todo_provider/widgets/todos_list.dart';
@@ -68,7 +68,7 @@ class _TodosScreenState extends State<TodosScreen> {
                   final isSignOut = await confirmSigningOut(context);
 
                   if (isSignOut) {
-                    accountProvider.signOut();
+                    await accountProvider.signOut();
                   }
 
                   break;

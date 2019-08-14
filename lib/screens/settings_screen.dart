@@ -24,7 +24,7 @@ class SettingsScreen extends StatelessWidget {
                   final isSignOut = await confirmSigningOut(context);
 
                   if (isSignOut) {
-                    accountProvider.signOut();
+                    await accountProvider.signOut();
                   }
                   break;
               }

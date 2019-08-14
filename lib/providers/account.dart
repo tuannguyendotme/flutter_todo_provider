@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_todo_provider/helpers/storage_helper.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -8,11 +9,14 @@ import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/http_exception.dart';
 
 class Account with ChangeNotifier {
+  final StorageHelper storageHelper;
   String _userId;
   String _email;
   String _token;
   String _refreshToken;
   DateTime _expiryTime;
+
+  Account(this.storageHelper);
 
   bool get isAuthenticated => _userId != null;
 
@@ -66,12 +70,14 @@ class Account with ChangeNotifier {
     notifyListeners();
   }
 
-  void signOut() {
+  Future signOut() async {
     _userId = null;
     _email = null;
     _token = null;
     _refreshToken = null;
     _expiryTime = null;
+
+    await storageHelper.clear();
 
     notifyListeners();
   }
