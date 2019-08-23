@@ -45,7 +45,7 @@ class SettingsScreen extends StatelessWidget {
           Consumer<Settings>(
             builder: (context, settings, child) => SwitchListTile(
               activeColor: Theme.of(context).accentColor,
-              value: settings.useDarkTheme,
+              value: settings.value.useDarkTheme,
               onChanged: (value) {
                 settings.toggleTheme();
               },
