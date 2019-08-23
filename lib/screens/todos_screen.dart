@@ -102,7 +102,7 @@ class _TodosScreenState extends State<TodosScreen> {
         onPressed: () {
           showTodoForm(
             context,
-            Todo.initial(accountProvider.userId),
+            Todo.initial(accountProvider.value.userId),
           );
         },
       ),

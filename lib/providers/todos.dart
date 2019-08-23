@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
+import 'package:flutter_todo_provider/models/account.dart' as model;
 import 'package:flutter_todo_provider/models/filter.dart';
 import 'package:flutter_todo_provider/http_exception.dart';
 import 'package:flutter_todo_provider/providers/account.dart';
@@ -17,6 +18,8 @@ class Todos with ChangeNotifier {
   Filter _filter = Filter.All;
 
   Todos(this.account);
+
+  model.Account get _accountModel => account.value;
 
   UnmodifiableListView<Todo> get items {
     switch (_filter) {
@@ -44,7 +47,7 @@ class Todos with ChangeNotifier {
   Future fetchTodos() async {
     const String message = 'Fail to fetch todos.';
     final url =
-        '${Configuration.FirebaseUrl}/todos.json?auth=${account.token}&orderBy="userId"&equalTo="${account.userId}"';
+        '${Configuration.FirebaseUrl}/todos.json?auth=${_accountModel.token}&orderBy="userId"&equalTo="${_accountModel.userId}"';
 
     try {
       final response = await http.get(url);
@@ -67,7 +70,8 @@ class Todos with ChangeNotifier {
 
   Future addTodo(Todo todo) async {
     const String message = 'Fail to create todo.';
-    final url = '${Configuration.FirebaseUrl}/todos.json?auth=${account.token}';
+    final url =
+        '${Configuration.FirebaseUrl}/todos.json?auth=${_accountModel.token}';
 
     try {
       final response = await http.post(
@@ -99,7 +103,7 @@ class Todos with ChangeNotifier {
   Future updateTodo(Todo todo) async {
     const String message = 'Fail to update todo.';
     final url =
-        '${Configuration.FirebaseUrl}/todos/${todo.id}.json?auth=${account.token}';
+        '${Configuration.FirebaseUrl}/todos/${todo.id}.json?auth=${_accountModel.token}';
 
     try {
       final response = await http.put(
@@ -136,7 +140,7 @@ class Todos with ChangeNotifier {
     notifyListeners();
 
     final url =
-        '${Configuration.FirebaseUrl}/todos/$id.json?auth=${account.token}';
+        '${Configuration.FirebaseUrl}/todos/$id.json?auth=${_accountModel.token}';
 
     try {
       final response = await http.delete(url);
@@ -168,7 +172,7 @@ class Todos with ChangeNotifier {
     notifyListeners();
 
     final url =
-        '${Configuration.FirebaseUrl}/todos/$id.json?auth=${account.token}';
+        '${Configuration.FirebaseUrl}/todos/$id.json?auth=${_accountModel.token}';
 
     try {
       final response = await http.put(

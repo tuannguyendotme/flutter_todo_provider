@@ -7,22 +7,15 @@ import 'package:http/http.dart' as http;
 
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/http_exception.dart';
+import 'package:flutter_todo_provider/models/account.dart' as model;
 
 class Account with ChangeNotifier {
   final StorageHelper storageHelper;
-  String _userId;
-  String _email;
-  String _token;
-  String _refreshToken;
-  DateTime _expiryTime;
+  model.Account value;
 
-  Account(this.storageHelper);
-
-  bool get isAuthenticated => _userId != null;
-
-  String get userId => _userId;
-
-  String get token => _token;
+  Account(StorageHelper storageHelper, model.Account initialAccount)
+      : this.storageHelper = storageHelper,
+        this.value = initialAccount;
 
   Future signIn(String email, String password) async {
     final response = await http.post(
@@ -58,26 +51,14 @@ class Account with ChangeNotifier {
       throw HttpException(message);
     }
 
-    final DateTime expiryTime = DateTime.now()
-        .add(Duration(seconds: int.parse(responseData['expiresIn'])));
-
-    _userId = responseData['localId'];
-    _email = responseData['email'];
-    _token = responseData['idToken'];
-    _refreshToken = responseData['refreshToken'];
-    _expiryTime = expiryTime;
-
-    notifyListeners();
+    _saveAccount(responseData);
   }
 
   Future signOut() async {
-    _userId = null;
-    _email = null;
-    _token = null;
-    _refreshToken = null;
-    _expiryTime = null;
+    final newAccount = model.Account.initial();
+    storageHelper.saveAccount(newAccount);
 
-    await storageHelper.clear();
+    value = newAccount;
 
     notifyListeners();
   }
@@ -117,14 +98,21 @@ class Account with ChangeNotifier {
       throw HttpException(message);
     }
 
+    _saveAccount(responseData);
+  }
+
+  void _saveAccount(Map<String, dynamic> responseData) {
     final DateTime expiryTime = DateTime.now()
         .add(Duration(seconds: int.parse(responseData['expiresIn'])));
+    final newAccount = value.copyWith(
+        userId: responseData['localId'],
+        email: responseData['email'],
+        token: responseData['idToken'],
+        refreshToken: responseData['refreshToken'],
+        expiryTime: expiryTime);
+    storageHelper.saveAccount(newAccount);
 
-    _userId = responseData['localId'];
-    _email = responseData['email'];
-    _token = responseData['idToken'];
-    _refreshToken = responseData['refreshToken'];
-    _expiryTime = expiryTime;
+    value = newAccount;
 
     notifyListeners();
   }

@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
+
 class Settings {
   final bool useDarkTheme;
 
-  Settings({this.useDarkTheme});
+  Settings({@required this.useDarkTheme});
 
   Settings copyWith({bool useDarkTheme}) {
     return Settings(
