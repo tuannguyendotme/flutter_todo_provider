@@ -15,7 +15,8 @@ class Account {
     @required this.expiryTime,
   });
 
-  bool get isAuthenticated => userId != null;
+  bool get isAuthenticated =>
+      expiryTime != null && expiryTime.isAfter(DateTime.now()) && token != null;
 
   Account.initial()
       : userId = null,
