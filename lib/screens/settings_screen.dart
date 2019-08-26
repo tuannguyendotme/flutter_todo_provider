@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_todo_provider/.env.dart';
+import 'package:flutter_todo_provider/helpers/ui_helper.dart';
 import 'package:flutter_todo_provider/services/settings_service.dart';
 import 'package:flutter_todo_provider/services/account_service.dart';
 
@@ -21,11 +22,12 @@ class SettingsScreen extends StatelessWidget {
                 case 'SignOut':
                   final accountService =
                       Provider.of<AccountService>(context, listen: false);
-                  final isSignOut = await confirmSigningOut(context);
+                  final isSignOut = await UIHelper.confirmSigningOut(context);
 
                   if (isSignOut) {
                     await accountService.signOut();
                   }
+
                   break;
               }
             },
@@ -33,7 +35,7 @@ class SettingsScreen extends StatelessWidget {
               return [
                 PopupMenuItem<String>(
                   value: 'SignOut',
-                  child: Text('Sign out'),
+                  child: const Text('Sign out'),
                 ),
               ];
             },
@@ -49,32 +51,8 @@ class SettingsScreen extends StatelessWidget {
               onChanged: (value) {
                 settingsService.toggleTheme();
               },
-              title: Text('Use dark theme'),
+              title: const Text('Use dark theme'),
             ),
-          )
-        ],
-      ),
-    );
-  }
-
-  Future<bool> confirmSigningOut(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirm'),
-        content: Text('Are you sure to signing out?'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('No'),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-          FlatButton(
-            child: Text('Yes'),
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
           )
         ],
       ),

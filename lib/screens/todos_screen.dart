@@ -22,37 +22,37 @@ class TodosScreen extends StatefulWidget {
 class _TodosScreenState extends State<TodosScreen> {
   @override
   Widget build(BuildContext context) {
-    final todoServvice = Provider.of<TodoService>(context, listen: false);
+    final todoService = Provider.of<TodoService>(context, listen: false);
     final accountService = Provider.of<AccountService>(context, listen: false);
-    final currentFilter = todoServvice.filter;
+    final currentFilter = todoService.filter;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(Configuration.AppName),
         actions: <Widget>[
           PopupMenuButton<Filter>(
-            icon: Icon(Icons.filter_list),
+            icon: const Icon(Icons.filter_list),
             itemBuilder: (BuildContext context) {
               return [
                 CheckedPopupMenuItem<Filter>(
                   checked: currentFilter == Filter.All,
                   value: Filter.All,
-                  child: Text('All'),
+                  child: const Text('All'),
                 ),
                 CheckedPopupMenuItem<Filter>(
                   checked: currentFilter == Filter.Done,
                   value: Filter.Done,
-                  child: Text('Done'),
+                  child: const Text('Done'),
                 ),
                 CheckedPopupMenuItem<Filter>(
                   checked: currentFilter == Filter.NotDone,
                   value: Filter.NotDone,
-                  child: Text('Not Done'),
+                  child: const Text('Not Done'),
                 ),
               ];
             },
             onSelected: (Filter filter) {
-              todoServvice.applyFilter(filter);
+              todoService.applyFilter(filter);
 
               setState(() {});
             },
@@ -65,7 +65,7 @@ class _TodosScreenState extends State<TodosScreen> {
                   break;
 
                 case 'SignOut':
-                  final isSignOut = await confirmSigningOut(context);
+                  final isSignOut = await UIHelper.confirmSigningOut(context);
 
                   if (isSignOut) {
                     await accountService.signOut();
@@ -78,11 +78,11 @@ class _TodosScreenState extends State<TodosScreen> {
               return [
                 PopupMenuItem<String>(
                   value: 'Settings',
-                  child: Text('Settings'),
+                  child: const Text('Settings'),
                 ),
                 PopupMenuItem<String>(
                   value: 'SignOut',
-                  child: Text('Sign out'),
+                  child: const Text('Sign out'),
                 ),
               ];
             },
@@ -109,35 +109,11 @@ class _TodosScreenState extends State<TodosScreen> {
     );
   }
 
-  Future<bool> confirmSigningOut(BuildContext context) {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirm'),
-        content: Text('Are you sure to signing out?'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('No'),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-          FlatButton(
-            child: Text('Yes'),
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-          )
-        ],
-      ),
-    );
-  }
-
   void showTodoForm(BuildContext context, Todo todo) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
-        color: Color(0xFF737373),
+        color: const Color(0xFF737373),
         height: 420,
         child: Container(
           padding: UIHelper.padding,

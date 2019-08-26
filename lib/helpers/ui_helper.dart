@@ -41,4 +41,28 @@ class UIHelper {
         return Colors.lightGreen;
     }
   }
+
+  static Future<bool> confirmSigningOut(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirm'),
+        content: const Text('Are you sure to signing out?'),
+        actions: <Widget>[
+          FlatButton(
+            child: const Text('No'),
+            onPressed: () {
+              Navigator.of(context).pop(false);
+            },
+          ),
+          FlatButton(
+            child: const Text('Yes'),
+            onPressed: () {
+              Navigator.of(context).pop(true);
+            },
+          )
+        ],
+      ),
+    );
+  }
 }

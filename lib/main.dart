@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_provider/helpers/storage_helper.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:flutter_todo_provider/.env.dart';
+import 'package:flutter_todo_provider/helpers/storage_helper.dart';
 import 'package:flutter_todo_provider/models/settings.dart';
 import 'package:flutter_todo_provider/models/account.dart';
 import 'package:flutter_todo_provider/services/account_service.dart';
@@ -55,7 +56,7 @@ class MyApp extends StatelessWidget {
       child: Consumer<AccountService>(
         builder: (context, accountService, child) => Consumer<SettingsService>(
           builder: (context, settingsService, child) => MaterialApp(
-            title: 'Flutter Todo Provider',
+            title: Configuration.AppName,
             theme: ThemeData(
               primaryColor: Colors.blue,
               accentColor: Colors.blue,
