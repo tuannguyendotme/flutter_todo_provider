@@ -3,11 +3,11 @@ import 'package:flutter_todo_provider/helpers/storage_helper.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:flutter_todo_provider/models/settings.dart' as model;
-import 'package:flutter_todo_provider/models/account.dart' as model;
-import 'package:flutter_todo_provider/providers/account.dart';
-import 'package:flutter_todo_provider/providers/todos.dart';
-import 'package:flutter_todo_provider/providers/settings.dart';
+import 'package:flutter_todo_provider/models/settings.dart';
+import 'package:flutter_todo_provider/models/account.dart';
+import 'package:flutter_todo_provider/services/account_service.dart';
+import 'package:flutter_todo_provider/services/todo_service.dart';
+import 'package:flutter_todo_provider/services/settings_service.dart';
 import 'package:flutter_todo_provider/screens/todos_screen.dart';
 import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/screens/account_screen.dart';
@@ -26,8 +26,8 @@ void main() async {
 
 class MyApp extends StatelessWidget {
   final StorageHelper storageHelper;
-  final model.Settings initialSettings;
-  final model.Account initialAccount;
+  final Settings initialSettings;
+  final Account initialAccount;
 
   const MyApp({
     this.storageHelper,
@@ -40,30 +40,32 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value: Account(this.storageHelper, this.initialAccount),
+          value: AccountService(this.storageHelper, this.initialAccount),
         ),
         ChangeNotifierProvider(
           builder: (context) =>
-              Settings(this.storageHelper, this.initialSettings),
+              SettingsService(this.storageHelper, this.initialSettings),
         ),
-        ChangeNotifierProxyProvider<Account, Todos>(
+        ChangeNotifierProxyProvider<AccountService, TodoService>(
           initialBuilder: null,
-          builder: (context, account, todos) => Todos(account),
+          builder: (context, accountService, todoService) =>
+              TodoService(accountService),
         ),
       ],
-      child: Consumer<Account>(
-        builder: (context, account, child) => Consumer<Settings>(
-          builder: (context, settings, child) => MaterialApp(
+      child: Consumer<AccountService>(
+        builder: (context, accountService, child) => Consumer<SettingsService>(
+          builder: (context, settingsService, child) => MaterialApp(
             title: 'Flutter Todo Provider',
             theme: ThemeData(
               primaryColor: Colors.blue,
               accentColor: Colors.blue,
-              brightness: settings.value.useDarkTheme
+              brightness: settingsService.settings.useDarkTheme
                   ? Brightness.dark
                   : Brightness.light,
             ),
-            home:
-                account.value.isAuthenticated ? TodosScreen() : AccountScreen(),
+            home: accountService.account.isAuthenticated
+                ? TodosScreen()
+                : AccountScreen(),
             routes: {
               AccountScreen.routeName: (context) => AccountScreen(),
               TodosScreen.routeName: (context) => TodosScreen(),

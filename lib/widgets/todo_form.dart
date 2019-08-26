@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_todo_provider/http_exception.dart';
 import 'package:flutter_todo_provider/helpers/ui_helper.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
-import 'package:flutter_todo_provider/providers/todos.dart';
+import 'package:flutter_todo_provider/services/todo_service.dart';
 import 'package:flutter_todo_provider/widgets/priority_form_field.dart';
 import 'package:flutter_todo_provider/widgets/toggle_form_field.dart';
 
@@ -168,13 +168,13 @@ class _TodoFormState extends State<TodoForm> {
       _errorMessage = '';
     });
 
-    final todosProvider = Provider.of<Todos>(context, listen: false);
+    final todoService = Provider.of<TodoService>(context, listen: false);
 
     try {
       if (todo.id == null) {
-        await todosProvider.addTodo(newTodo);
+        await todoService.addTodo(newTodo);
       } else {
-        await todosProvider.updateTodo(newTodo);
+        await todoService.updateTodo(newTodo);
       }
     } on HttpException catch (e) {
       setState(() {

@@ -1,21 +1,21 @@
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter_todo_provider/helpers/storage_helper.dart';
 
 import 'package:http/http.dart' as http;
 
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/http_exception.dart';
-import 'package:flutter_todo_provider/models/account.dart' as model;
+import 'package:flutter_todo_provider/helpers/storage_helper.dart';
+import 'package:flutter_todo_provider/models/account.dart';
 
-class Account with ChangeNotifier {
+class AccountService with ChangeNotifier {
   final StorageHelper storageHelper;
-  model.Account value;
+  Account account;
 
-  Account(StorageHelper storageHelper, model.Account initialAccount)
+  AccountService(StorageHelper storageHelper, Account initialAccount)
       : this.storageHelper = storageHelper,
-        this.value = initialAccount;
+        this.account = initialAccount;
 
   Future signIn(String email, String password) async {
     final response = await http.post(
@@ -55,10 +55,9 @@ class Account with ChangeNotifier {
   }
 
   Future signOut() async {
-    final newAccount = model.Account.initial();
-    storageHelper.saveAccount(newAccount);
+    await storageHelper.clear();
 
-    value = newAccount;
+    account = Account.initial();
 
     notifyListeners();
   }
@@ -104,7 +103,7 @@ class Account with ChangeNotifier {
   void _saveAccount(Map<String, dynamic> responseData) {
     final DateTime expiryTime = DateTime.now()
         .add(Duration(seconds: int.parse(responseData['expiresIn'])));
-    final newAccount = value.copyWith(
+    final newAccount = account.copyWith(
         userId: responseData['localId'],
         email: responseData['email'],
         token: responseData['idToken'],
@@ -112,7 +111,7 @@ class Account with ChangeNotifier {
         expiryTime: expiryTime);
     storageHelper.saveAccount(newAccount);
 
-    value = newAccount;
+    account = newAccount;
 
     notifyListeners();
   }

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'package:flutter_todo_provider/.env.dart';
-import 'package:flutter_todo_provider/providers/settings.dart';
-import 'package:flutter_todo_provider/providers/account.dart';
+import 'package:flutter_todo_provider/services/settings_service.dart';
+import 'package:flutter_todo_provider/services/account_service.dart';
 
 class SettingsScreen extends StatelessWidget {
   static const String routeName = '/settings';
@@ -19,12 +19,12 @@ class SettingsScreen extends StatelessWidget {
             onSelected: (String choice) async {
               switch (choice) {
                 case 'SignOut':
-                  final accountProvider =
-                      Provider.of<Account>(context, listen: false);
+                  final accountService =
+                      Provider.of<AccountService>(context, listen: false);
                   final isSignOut = await confirmSigningOut(context);
 
                   if (isSignOut) {
-                    await accountProvider.signOut();
+                    await accountService.signOut();
                   }
                   break;
               }
@@ -42,12 +42,12 @@ class SettingsScreen extends StatelessWidget {
       ),
       body: ListView(
         children: <Widget>[
-          Consumer<Settings>(
-            builder: (context, settings, child) => SwitchListTile(
+          Consumer<SettingsService>(
+            builder: (context, settingsService, child) => SwitchListTile(
               activeColor: Theme.of(context).accentColor,
-              value: settings.value.useDarkTheme,
+              value: settingsService.settings.useDarkTheme,
               onChanged: (value) {
-                settings.toggleTheme();
+                settingsService.toggleTheme();
               },
               title: Text('Use dark theme'),
             ),

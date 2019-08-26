@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/http_exception.dart';
 import 'package:flutter_todo_provider/helpers/ui_helper.dart';
-import 'package:flutter_todo_provider/providers/account.dart';
+import 'package:flutter_todo_provider/services/account_service.dart';
 
 enum _FormMode {
   SignIn,
@@ -124,14 +124,15 @@ class _AccountScreenState extends State<AccountScreen> {
           _errorMessage = '';
         });
 
-        final accountProvider = Provider.of<Account>(context, listen: false);
+        final accountService =
+            Provider.of<AccountService>(context, listen: false);
 
         try {
           if (_formMode == _FormMode.SignIn) {
-            await accountProvider.signIn(
+            await accountService.signIn(
                 _formData['email'], _formData['password']);
           } else {
-            await accountProvider.signUp(
+            await accountService.signUp(
                 _formData['email'], _formData['password']);
           }
         } on HttpException catch (e) {

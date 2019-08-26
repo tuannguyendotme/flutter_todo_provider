@@ -52,4 +52,10 @@ class StorageHelper {
     await prefs.setString(_refreshToken, account.refreshToken);
     await prefs.setString(_expiryTime, account.expiryTime.toIso8601String());
   }
+
+  Future<void> clear() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    prefs.clear();
+  }
 }

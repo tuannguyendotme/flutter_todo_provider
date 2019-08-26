@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_provider/providers/account.dart';
 
 import 'package:provider/provider.dart';
 
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/models/filter.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
-import 'package:flutter_todo_provider/providers/todos.dart';
+import 'package:flutter_todo_provider/services/todo_service.dart';
+import 'package:flutter_todo_provider/services/account_service.dart';
 import 'package:flutter_todo_provider/helpers/ui_helper.dart';
 import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/widgets/todo_form.dart';
@@ -22,9 +22,9 @@ class TodosScreen extends StatefulWidget {
 class _TodosScreenState extends State<TodosScreen> {
   @override
   Widget build(BuildContext context) {
-    final todosProvider = Provider.of<Todos>(context, listen: false);
-    final accountProvider = Provider.of<Account>(context, listen: false);
-    final currentFilter = todosProvider.filter;
+    final todoServvice = Provider.of<TodoService>(context, listen: false);
+    final accountService = Provider.of<AccountService>(context, listen: false);
+    final currentFilter = todoServvice.filter;
 
     return Scaffold(
       appBar: AppBar(
@@ -52,7 +52,7 @@ class _TodosScreenState extends State<TodosScreen> {
               ];
             },
             onSelected: (Filter filter) {
-              todosProvider.applyFilter(filter);
+              todoServvice.applyFilter(filter);
 
               setState(() {});
             },
@@ -68,7 +68,7 @@ class _TodosScreenState extends State<TodosScreen> {
                   final isSignOut = await confirmSigningOut(context);
 
                   if (isSignOut) {
-                    await accountProvider.signOut();
+                    await accountService.signOut();
                   }
 
                   break;
@@ -102,7 +102,7 @@ class _TodosScreenState extends State<TodosScreen> {
         onPressed: () {
           showTodoForm(
             context,
-            Todo.initial(accountProvider.value.userId),
+            Todo.initial(accountService.account.userId),
           );
         },
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
-import 'package:flutter_todo_provider/providers/todos.dart';
+import 'package:flutter_todo_provider/services/todo_service.dart';
 import 'package:flutter_todo_provider/widgets/todo_card.dart';
 
 class TodosList extends StatefulWidget {
@@ -15,15 +15,15 @@ class TodosList extends StatefulWidget {
 }
 
 class _TodosListState extends State<TodosList> {
-  Todos _todosProvider;
+  TodoService _todoService;
   Future<dynamic> _todos;
 
   @override
   void initState() {
     super.initState();
 
-    _todosProvider = Provider.of<Todos>(context, listen: false);
-    _todos = _todosProvider.fetchTodos();
+    _todoService = Provider.of<TodoService>(context, listen: false);
+    _todos = _todoService.fetchTodos();
   }
 
   @override
@@ -42,11 +42,11 @@ class _TodosListState extends State<TodosList> {
             ? Center(
                 child: CircularProgressIndicator(),
               )
-            : Consumer<Todos>(
-                builder: (context, todosData, child) => ListView.builder(
-                  itemCount: todosData.items.length,
+            : Consumer<TodoService>(
+                builder: (context, todoService, child) => ListView.builder(
+                  itemCount: todoService.items.length,
                   itemBuilder: (context, index) {
-                    final todo = todosData.items[index];
+                    final todo = todoService.items[index];
 
                     return Dismissible(
                       key: ValueKey(todo.id),
@@ -60,7 +60,7 @@ class _TodosListState extends State<TodosList> {
                       onDismissed: (direction) async {
                         if (direction == DismissDirection.endToStart) {
                           try {
-                            await _todosProvider.removeTodo(todo.id);
+                            await _todoService.removeTodo(todo.id);
                           } catch (e) {
                             Scaffold.of(context).showSnackBar(
                               SnackBar(
@@ -125,7 +125,7 @@ class _TodosListState extends State<TodosList> {
 
   Future<bool> toggleDone(String todoId) async {
     try {
-      await _todosProvider.toggleDone(todoId);
+      await _todoService.toggleDone(todoId);
     } catch (e) {
       Scaffold.of(context).showSnackBar(SnackBar(
         content: Text('Fail to update todo status.'),
