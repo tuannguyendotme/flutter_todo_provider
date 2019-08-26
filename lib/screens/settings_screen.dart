@@ -22,7 +22,8 @@ class SettingsScreen extends StatelessWidget {
                 case 'SignOut':
                   final accountService =
                       Provider.of<AccountService>(context, listen: false);
-                  final isSignOut = await UIHelper.confirmSigningOut(context);
+                  final isSignOut = await UIHelper.confirm(
+                      context, 'Are you sure to signing out?');
 
                   if (isSignOut) {
                     await accountService.signOut();

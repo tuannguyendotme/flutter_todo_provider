@@ -65,7 +65,8 @@ class _TodosScreenState extends State<TodosScreen> {
                   break;
 
                 case 'SignOut':
-                  final isSignOut = await UIHelper.confirmSigningOut(context);
+                  final isSignOut = await UIHelper.confirm(
+                      context, 'Are you sure to signing out?');
 
                   if (isSignOut) {
                     await accountService.signOut();

@@ -42,12 +42,12 @@ class UIHelper {
     }
   }
 
-  static Future<bool> confirmSigningOut(BuildContext context) {
+  static Future<bool> confirm(BuildContext context, String message) {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Confirm'),
-        content: const Text('Are you sure to signing out?'),
+        content: Text(message),
         actions: <Widget>[
           FlatButton(
             child: const Text('No'),

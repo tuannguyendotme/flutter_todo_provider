@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
 
+import 'package:flutter_todo_provider/helpers/ui_helper.dart';
 import 'package:flutter_todo_provider/services/todo_service.dart';
 import 'package:flutter_todo_provider/widgets/todo_card.dart';
 
@@ -64,32 +65,46 @@ class _TodosListState extends State<TodosList> {
                           } catch (e) {
                             Scaffold.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('Fail to remove todo'),
+                                content: const Text('Fail to remove todo'),
                               ),
                             );
                           }
                         }
                       },
-                      confirmDismiss: (direction) {
+                      confirmDismiss: (direction) async {
                         if (direction == DismissDirection.endToStart) {
-                          return confirmRemove();
+                          return await UIHelper.confirm(
+                              context, 'Are you sure to remove this todo?');
                         } else {
                           return toggleDone(todo.id);
                         }
                       },
                       background: Container(
                         color: Colors.green,
-                        child: Icon(todo.isDone
-                            ? Icons.check_box_outline_blank
-                            : Icons.check),
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(left: 16),
+                        child: Stack(
+                          children: <Widget>[
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              child: Icon(todo.isDone
+                                  ? Icons.check_box_outline_blank
+                                  : Icons.check),
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              child: CircularProgressIndicator(
+                                valueColor: new AlwaysStoppedAnimation<Color>(
+                                    Colors.black),
+                              ),
+                            )
+                          ],
+                        ),
+                        padding: const EdgeInsets.only(left: 16),
                       ),
                       secondaryBackground: Container(
                         color: Colors.red,
-                        child: Icon(Icons.delete),
+                        child: const Icon(Icons.delete),
                         alignment: Alignment.centerRight,
-                        padding: EdgeInsets.only(right: 16),
+                        padding: const EdgeInsets.only(right: 16),
                       ),
                     );
                   },
@@ -99,36 +114,12 @@ class _TodosListState extends State<TodosList> {
     );
   }
 
-  Future<bool> confirmRemove() {
-    return showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Confirm'),
-        content: Text('Are you sure to remove this todo?'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('No'),
-            onPressed: () {
-              Navigator.of(context).pop(false);
-            },
-          ),
-          FlatButton(
-            child: Text('Yes'),
-            onPressed: () {
-              Navigator.of(context).pop(true);
-            },
-          )
-        ],
-      ),
-    );
-  }
-
   Future<bool> toggleDone(String todoId) async {
     try {
       await _todoService.toggleDone(todoId);
     } catch (e) {
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text('Fail to update todo status.'),
+        content: const Text('Fail to update todo status.'),
       ));
     }
 
