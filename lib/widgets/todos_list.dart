@@ -91,9 +91,9 @@ class _TodosListState extends State<TodosList> {
                             ),
                             Container(
                               alignment: Alignment.center,
-                              child: CircularProgressIndicator(
-                                valueColor: new AlwaysStoppedAnimation<Color>(
-                                    Colors.black),
+                              child: const CircularProgressIndicator(
+                                valueColor:
+                                    AlwaysStoppedAnimation<Color>(Colors.black),
                               ),
                             )
                           ],

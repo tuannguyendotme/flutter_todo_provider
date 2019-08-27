@@ -104,7 +104,7 @@ class _TodoFormState extends State<TodoForm> {
             },
           ),
           width: 120,
-          height: 56,
+          height: 54,
         ),
         UIHelper.horizontalSpaceMedium,
         Container(
@@ -115,7 +115,7 @@ class _TodoFormState extends State<TodoForm> {
             onPressed: _save,
           ),
           width: 120,
-          height: 56,
+          height: 54,
         ),
       ],
     );

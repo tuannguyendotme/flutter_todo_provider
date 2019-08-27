@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_todo_provider/models/account.dart';
 class AccountService with ChangeNotifier {
   final StorageHelper storageHelper;
   Account account;
+  Timer _autoLogoutTimer;
 
   AccountService(StorageHelper storageHelper, Account initialAccount)
       : this.storageHelper = storageHelper,
@@ -56,6 +58,11 @@ class AccountService with ChangeNotifier {
 
   Future signOut() async {
     await storageHelper.clear();
+
+    if (_autoLogoutTimer != null) {
+      _autoLogoutTimer.cancel();
+      _autoLogoutTimer = null;
+    }
 
     account = Account.initial();
 
@@ -112,7 +119,17 @@ class AccountService with ChangeNotifier {
     storageHelper.saveAccount(newAccount);
 
     account = newAccount;
-
     notifyListeners();
+
+    setUpAutoLogoutTimer(expiryTime);
+  }
+
+  void setUpAutoLogoutTimer(DateTime expiryTime) {
+    if (_autoLogoutTimer != null) {
+      _autoLogoutTimer.cancel();
+    }
+
+    final timeToExpiry = expiryTime.difference(DateTime.now()).inSeconds;
+    _autoLogoutTimer = Timer(Duration(seconds: timeToExpiry), signOut);
   }
 }

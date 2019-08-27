@@ -49,8 +49,13 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProxyProvider<AccountService, TodoService>(
           initialBuilder: null,
-          builder: (context, accountService, todoService) =>
-              TodoService(accountService),
+          builder: (context, accountService, todoService) {
+            if (initialAccount.isAuthenticated) {
+              accountService.setUpAutoLogoutTimer(initialAccount.expiryTime);
+            }
+
+            return TodoService(accountService);
+          },
         ),
       ],
       child: Consumer<AccountService>(
