@@ -27,6 +27,11 @@ class UIHelper {
   static const Widget horizontalSpaceLarge =
       SizedBox(width: _HorizontalSpaceLarge);
 
+  static const TextStyle headerTextStyle = TextStyle(
+    fontSize: 30,
+    fontWeight: FontWeight.bold,
+  );
+
   static const EdgeInsets padding = EdgeInsets.all(10);
 
   static Color getPriorityColor(Priority priority) {

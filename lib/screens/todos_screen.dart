@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_todo_provider/widgets/todos_summary.dart';
 
 import 'package:provider/provider.dart';
 
@@ -90,13 +91,20 @@ class _TodosScreenState extends State<TodosScreen> {
           ),
         ],
       ),
-      body: TodosList(
-        onEdit: (Todo todo) {
-          showTodoForm(
-            context,
-            todo,
-          );
-        },
+      body: Column(
+        children: <Widget>[
+          TodosSummary(),
+          Expanded(
+            child: TodosList(
+              onEdit: (Todo todo) {
+                showTodoForm(
+                  context,
+                  todo,
+                );
+              },
+            ),
+          )
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),

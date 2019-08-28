@@ -2,6 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_todo_provider/models/priority.dart';
 
 import 'package:http/http.dart' as http;
 
@@ -34,6 +35,12 @@ class TodoService with ChangeNotifier {
       default:
         return UnmodifiableListView(_items);
     }
+  }
+
+  UnmodifiableListView<Todo> getItemsByPriority(Priority priority) {
+    final items = _items.where((t) => t.priority == priority).toList();
+
+    return UnmodifiableListView(items);
   }
 
   Filter get filter => _filter;
