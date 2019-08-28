@@ -14,25 +14,31 @@ import 'package:flutter_todo_provider/screens/account_screen.dart';
 
 void main() async {
   final prefs = await SharedPreferences.getInstance();
-  final storageHelper = StorageHelper(prefs);
 
-  runApp(MyApp(storageHelper: storageHelper));
+  runApp(MyApp(prefs: prefs));
 }
 
 class MyApp extends StatelessWidget {
-  final StorageHelper storageHelper;
+  final SharedPreferences prefs;
 
-  const MyApp({this.storageHelper});
+  const MyApp({this.prefs});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider.value(
-          value: AccountService(this.storageHelper),
+        Provider.value(
+          value: StorageHelper(this.prefs),
         ),
-        ChangeNotifierProvider(
-          builder: (context) => SettingsService(this.storageHelper),
+        ChangeNotifierProxyProvider<StorageHelper, AccountService>(
+          initialBuilder: null,
+          builder: (context, storageHelper, accountService) =>
+              AccountService(storageHelper),
+        ),
+        ChangeNotifierProxyProvider<StorageHelper, SettingsService>(
+          initialBuilder: null,
+          builder: (context, storageHelper, settingsService) =>
+              SettingsService(storageHelper),
         ),
         ChangeNotifierProxyProvider<AccountService, TodoService>(
           initialBuilder: null,
