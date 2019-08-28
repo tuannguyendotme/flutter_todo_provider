@@ -26,7 +26,7 @@ class SettingsScreen extends StatelessWidget {
                       context, 'Are you sure to signing out?');
 
                   if (isSignOut) {
-                    await accountService.signOut();
+                    accountService.signOut();
                   }
 
                   break;

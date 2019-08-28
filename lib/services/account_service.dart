@@ -11,13 +11,14 @@ import 'package:flutter_todo_provider/helpers/storage_helper.dart';
 import 'package:flutter_todo_provider/models/account.dart';
 
 class AccountService with ChangeNotifier {
-  final StorageHelper storageHelper;
+  StorageHelper storageHelper;
   Account account;
   Timer _autoLogoutTimer;
 
-  AccountService(StorageHelper storageHelper, Account initialAccount)
-      : this.storageHelper = storageHelper,
-        this.account = initialAccount;
+  AccountService(StorageHelper storageHelper) {
+    this.storageHelper = storageHelper;
+    this.account = storageHelper.loadAccount();
+  }
 
   Future signIn(String email, String password) async {
     final response = await http.post(
@@ -56,8 +57,8 @@ class AccountService with ChangeNotifier {
     _saveAccount(responseData);
   }
 
-  Future signOut() async {
-    await storageHelper.clear();
+  void signOut() {
+    storageHelper.clear();
 
     if (_autoLogoutTimer != null) {
       _autoLogoutTimer.cancel();

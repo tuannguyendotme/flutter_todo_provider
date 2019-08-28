@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:flutter_todo_provider/.env.dart';
 import 'package:flutter_todo_provider/helpers/storage_helper.dart';
-import 'package:flutter_todo_provider/models/settings.dart';
-import 'package:flutter_todo_provider/models/account.dart';
 import 'package:flutter_todo_provider/services/account_service.dart';
 import 'package:flutter_todo_provider/services/todo_service.dart';
 import 'package:flutter_todo_provider/services/settings_service.dart';
@@ -14,44 +13,34 @@ import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/screens/account_screen.dart';
 
 void main() async {
-  final storageHelper = StorageHelper();
-  final initialSettings = await storageHelper.loadSettings();
-  final initialAccount = await storageHelper.loadAccount();
+  final prefs = await SharedPreferences.getInstance();
+  final storageHelper = StorageHelper(prefs);
 
-  runApp(MyApp(
-    storageHelper: storageHelper,
-    initialSettings: initialSettings,
-    initialAccount: initialAccount,
-  ));
+  runApp(MyApp(storageHelper: storageHelper));
 }
 
 class MyApp extends StatelessWidget {
   final StorageHelper storageHelper;
-  final Settings initialSettings;
-  final Account initialAccount;
 
-  const MyApp({
-    this.storageHelper,
-    this.initialSettings,
-    this.initialAccount,
-  });
+  const MyApp({this.storageHelper});
 
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider.value(
-          value: AccountService(this.storageHelper, this.initialAccount),
+          value: AccountService(this.storageHelper),
         ),
         ChangeNotifierProvider(
-          builder: (context) =>
-              SettingsService(this.storageHelper, this.initialSettings),
+          builder: (context) => SettingsService(this.storageHelper),
         ),
         ChangeNotifierProxyProvider<AccountService, TodoService>(
           initialBuilder: null,
           builder: (context, accountService, todoService) {
-            if (initialAccount.isAuthenticated) {
-              accountService.setUpAutoLogoutTimer(initialAccount.expiryTime);
+            final account = accountService.account;
+
+            if (account.isAuthenticated) {
+              accountService.setUpAutoLogoutTimer(account.expiryTime);
             }
 
             return TodoService(accountService);

@@ -70,7 +70,7 @@ class _TodosScreenState extends State<TodosScreen> {
                       context, 'Are you sure to signing out?');
 
                   if (isSignOut) {
-                    await accountService.signOut();
+                    accountService.signOut();
                   }
 
                   break;

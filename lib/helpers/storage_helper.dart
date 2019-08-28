@@ -11,9 +11,11 @@ class StorageHelper {
   static const String _refreshToken = 'refreshToken';
   static const String _expiryTime = 'expiryTime';
 
-  Future<Settings> loadSettings() async {
-    final prefs = await SharedPreferences.getInstance();
+  final SharedPreferences prefs;
 
+  StorageHelper(this.prefs);
+
+  Settings loadSettings() {
     return Settings(
       useDarkTheme: prefs.containsKey(_useDarkTheme)
           ? prefs.getBool(_useDarkTheme)
@@ -22,14 +24,10 @@ class StorageHelper {
   }
 
   Future<void> saveSettings(Settings settings) async {
-    final prefs = await SharedPreferences.getInstance();
-
     await prefs.setBool(_useDarkTheme, settings.useDarkTheme);
   }
 
-  Future<Account> loadAccount() async {
-    final prefs = await SharedPreferences.getInstance();
-
+  Account loadAccount() {
     if (!prefs.containsKey(_userId)) {
       return Account.initial();
     }
@@ -53,9 +51,7 @@ class StorageHelper {
     await prefs.setString(_expiryTime, account.expiryTime.toIso8601String());
   }
 
-  Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-
+  void clear() {
     prefs.clear();
   }
 }
