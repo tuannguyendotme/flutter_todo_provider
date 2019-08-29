@@ -16,7 +16,7 @@ class TodosSummary extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: <Widget>[
             Text(
-              'Total: ${todoService.items.length} task(s)',
+              'Total: ${todoService.allItemsCount} task(s)',
               style: UIHelper.headerTextStyle,
             ),
             Row(

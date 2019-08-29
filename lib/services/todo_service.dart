@@ -37,6 +37,10 @@ class TodoService with ChangeNotifier {
     }
   }
 
+  int get allItemsCount {
+    return _items.length;
+  }
+
   UnmodifiableListView<Todo> getItemsByPriority(Priority priority) {
     final items = _items.where((t) => t.priority == priority).toList();
 
