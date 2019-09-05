@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_todo_provider/widgets/todos_summary.dart';
 
 import 'package:provider/provider.dart';
 
@@ -8,10 +7,12 @@ import 'package:flutter_todo_provider/models/filter.dart';
 import 'package:flutter_todo_provider/models/todo.dart';
 import 'package:flutter_todo_provider/services/todo_service.dart';
 import 'package:flutter_todo_provider/services/account_service.dart';
+import 'package:flutter_todo_provider/services/settings_service.dart';
 import 'package:flutter_todo_provider/helpers/ui_helper.dart';
 import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/widgets/todo_form.dart';
 import 'package:flutter_todo_provider/widgets/todos_list.dart';
+import 'package:flutter_todo_provider/widgets/todos_summary.dart';
 
 class TodosScreen extends StatefulWidget {
   static const String routeName = '/todos';
@@ -93,7 +94,12 @@ class _TodosScreenState extends State<TodosScreen> {
       ),
       body: Column(
         children: <Widget>[
-          TodosSummary(),
+          Consumer<SettingsService>(
+            builder: (contexxt, settingsService, child) =>
+                settingsService.settings.showSummary
+                    ? TodosSummary()
+                    : Container(),
+          ),
           Expanded(
             child: TodosList(
               onEdit: (Todo todo) {

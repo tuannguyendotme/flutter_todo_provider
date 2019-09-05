@@ -43,10 +43,10 @@ class SettingsScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          Consumer<SettingsService>(
-            builder: (context, settingsService, child) => SwitchListTile(
+      body: Consumer<SettingsService>(
+        builder: (context, settingsService, child) => ListView(
+          children: <Widget>[
+            SwitchListTile(
               activeColor: Theme.of(context).accentColor,
               value: settingsService.settings.useDarkTheme,
               onChanged: (value) {
@@ -54,8 +54,16 @@ class SettingsScreen extends StatelessWidget {
               },
               title: const Text('Use dark theme'),
             ),
-          )
-        ],
+            SwitchListTile(
+              activeColor: Theme.of(context).accentColor,
+              value: settingsService.settings.showSummary,
+              onChanged: (value) {
+                settingsService.toggleSummary();
+              },
+              title: const Text('Show task summary'),
+            ),
+          ],
+        ),
       ),
     );
   }

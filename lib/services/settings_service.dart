@@ -19,4 +19,13 @@ class SettingsService with ChangeNotifier {
 
     notifyListeners();
   }
+
+  Future<void> toggleSummary() async {
+    final newSettings = settings.copyWith(showSummary: !settings.showSummary);
+    await storageHelper.saveSettings(newSettings);
+
+    settings = newSettings;
+
+    notifyListeners();
+  }
 }

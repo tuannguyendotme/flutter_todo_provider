@@ -5,6 +5,7 @@ import 'package:flutter_todo_provider/models/settings.dart';
 
 class StorageHelper {
   static const String _useDarkTheme = 'useDarkTheme';
+  static const String _showSummary = 'showSummary';
   static const String _userId = 'userId';
   static const String _email = 'email';
   static const String _token = 'token';
@@ -20,11 +21,14 @@ class StorageHelper {
       useDarkTheme: prefs.containsKey(_useDarkTheme)
           ? prefs.getBool(_useDarkTheme)
           : false,
+      showSummary:
+          prefs.containsKey(_showSummary) ? prefs.getBool(_showSummary) : false,
     );
   }
 
   Future<void> saveSettings(Settings settings) async {
     await prefs.setBool(_useDarkTheme, settings.useDarkTheme);
+    await prefs.setBool(_showSummary, settings.showSummary);
   }
 
   Account loadAccount() {
@@ -42,8 +46,6 @@ class StorageHelper {
   }
 
   Future<void> saveAccount(Account account) async {
-    final prefs = await SharedPreferences.getInstance();
-
     await prefs.setString(_userId, account.userId);
     await prefs.setString(_email, account.email);
     await prefs.setString(_token, account.token);
