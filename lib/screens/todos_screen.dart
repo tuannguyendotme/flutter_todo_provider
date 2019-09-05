@@ -27,11 +27,35 @@ class _TodosScreenState extends State<TodosScreen> {
     final todoService = Provider.of<TodoService>(context, listen: false);
     final accountService = Provider.of<AccountService>(context, listen: false);
     final currentFilter = todoService.filter;
+    var currentFilterText;
+
+    switch (currentFilter) {
+      case Filter.Done:
+        currentFilterText = 'Done';
+        break;
+
+      case Filter.NotDone:
+        currentFilterText = 'Not Done';
+        break;
+
+      default:
+        currentFilterText = 'All';
+        break;
+    }
 
     return Scaffold(
       appBar: AppBar(
         title: Text(Configuration.AppName),
         actions: <Widget>[
+          Center(
+            child: Text(
+              currentFilterText,
+              textScaleFactor: 1.5,
+              style: new TextStyle(
+                fontSize: 12.0,
+              ),
+            ),
+          ),
           PopupMenuButton<Filter>(
             icon: const Icon(Icons.filter_list),
             itemBuilder: (BuildContext context) {
