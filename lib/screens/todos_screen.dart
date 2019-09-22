@@ -127,10 +127,7 @@ class _TodosScreenState extends State<TodosScreen> {
           Expanded(
             child: TodosList(
               onEdit: (Todo todo) {
-                showTodoForm(
-                  context,
-                  todo,
-                );
+                showTodoForm(todo);
               },
             ),
           )
@@ -139,16 +136,13 @@ class _TodosScreenState extends State<TodosScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          showTodoForm(
-            context,
-            Todo.initial(accountService.account.userId),
-          );
+          showTodoForm(Todo.initial(accountService.account.userId));
         },
       ),
     );
   }
 
-  void showTodoForm(BuildContext context, Todo todo) {
+  void showTodoForm(Todo todo) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Container(
