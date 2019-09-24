@@ -145,17 +145,21 @@ class _TodosScreenState extends State<TodosScreen> {
   void showTodoForm(Todo todo) {
     showModalBottomSheet(
       context: context,
-      builder: (context) => Container(
-        color: const Color(0xFF737373),
-        height: 420,
-        child: Container(
-          padding: UIHelper.padding,
-          child: TodoForm(todo),
-          decoration: BoxDecoration(
-            color: Theme.of(context).canvasColor,
-            borderRadius: BorderRadius.only(
-              topLeft: const Radius.circular(10),
-              topRight: const Radius.circular(10),
+      builder: (context) => Consumer<SettingsService>(
+        builder: (context, settingsService, child) => Container(
+          color: settingsService.settings.useDarkTheme
+              ? const Color(0xFF161616)
+              : const Color(0xFF737373),
+          height: 420,
+          child: Container(
+            padding: UIHelper.padding,
+            child: TodoForm(todo),
+            decoration: BoxDecoration(
+              color: Theme.of(context).canvasColor,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(10),
+                topRight: const Radius.circular(10),
+              ),
             ),
           ),
         ),
