@@ -94,28 +94,18 @@ class _TodoFormState extends State<TodoForm> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Container(
-          child: RaisedButton.icon(
-            icon: Icon(Icons.cancel),
-            label: Text('Cancel'),
-            elevation: 0,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          width: 120,
-          height: 54,
+        RaisedButton.icon(
+          icon: Icon(Icons.cancel),
+          label: Text('Cancel'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
         UIHelper.horizontalSpaceMedium,
-        Container(
-          child: RaisedButton.icon(
-            icon: Icon(Icons.save),
-            label: Text('Save'),
-            elevation: 0,
-            onPressed: _save,
-          ),
-          width: 120,
-          height: 54,
+        RaisedButton.icon(
+          icon: Icon(Icons.save),
+          label: Text('Save'),
+          onPressed: _save,
         ),
       ],
     );

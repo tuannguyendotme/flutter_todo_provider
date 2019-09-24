@@ -108,8 +108,10 @@ class _AccountScreenState extends State<AccountScreen> {
   }
 
   Widget _buildFinishButton() {
-    return RaisedButton(
-      child: Text(
+    return RaisedButton.icon(
+      icon: Icon(
+          _formMode == _FormMode.SignIn ? Icons.lock_open : Icons.person_add),
+      label: Text(
         _formMode == _FormMode.SignIn ? 'Sign in' : 'Sign up',
       ),
       onPressed: () async {

@@ -150,7 +150,7 @@ class _TodosScreenState extends State<TodosScreen> {
           color: settingsService.settings.useDarkTheme
               ? const Color(0xFF161616)
               : const Color(0xFF737373),
-          height: 420,
+          height: 400,
           child: Container(
             padding: UIHelper.padding,
             child: TodoForm(todo),
