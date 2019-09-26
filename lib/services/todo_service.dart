@@ -47,6 +47,12 @@ class TodoService with ChangeNotifier {
     return UnmodifiableListView(items);
   }
 
+  double getItemCountByPriority(Priority priority) {
+    final items = getItemsByPriority(priority);
+
+    return items.length.toDouble();
+  }
+
   Filter get filter => _filter;
 
   void applyFilter(Filter newFilter) {
