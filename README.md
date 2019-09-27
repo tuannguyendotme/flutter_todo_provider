@@ -1,16 +1,28 @@
-# flutter_todo_provider
+# Flutter Todo
 
-A new Flutter project.
+Yet another Todo app, now using Flutter.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This Todo app is implemented using Flutter (with Provider for state management) and Firebase.
 
-A few resources to get you started if this is your first Flutter project:
+Features:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- Create/edit todo
+- Delete todo by swipping
+- Mark done/not done by swipping
+- Filter todo list by status (all/done/not done)
+- Change theme (light to dark and vice versa) at runtime
+- Login/logout
+- Register new account
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![UI Dark](ui_dark.png?raw=true)
+![UI Light](ui_light.png?raw=true)
+
+To get start, run below command in Terminal
+
+```bash
+cp .env.example.dart .env.dart
+```
+
+then add Firebase database's URL and API key to .env.dart.
