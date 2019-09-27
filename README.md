@@ -12,7 +12,7 @@ Features:
 - Delete todo by swipping
 - Mark done/not done by swipping
 - Filter todo list by status (all/done/not done)
-- Display summary
+- Display summary (can be toggle in settings)
 - Change theme (light to dark and vice versa) at runtime
 - Login/logout
 - Register new account
