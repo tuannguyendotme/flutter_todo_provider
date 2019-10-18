@@ -12,6 +12,7 @@ import 'package:flutter_todo_provider/screens/settings_screen.dart';
 import 'package:flutter_todo_provider/screens/account_screen.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
 
   runApp(MyApp(prefs: prefs));

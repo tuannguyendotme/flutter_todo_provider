@@ -25,7 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   http: ^0.12.0+2
   provider: ^3.1.0
-  shared_preferences: ^0.5.3+4
+  shared_preferences: ^0.5.3+5
   pie_chart: ^1.2.0
 
 dev_dependencies:
