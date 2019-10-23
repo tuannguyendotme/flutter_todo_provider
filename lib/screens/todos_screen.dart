@@ -22,34 +22,29 @@ class TodosScreen extends StatefulWidget {
 }
 
 class _TodosScreenState extends State<TodosScreen> {
+  TodoService _todoService;
+  AccountService _accountService;
+  Filter _currentFilter;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _todoService = Provider.of<TodoService>(context, listen: false);
+    _accountService = Provider.of<AccountService>(context, listen: false);
+
+    _currentFilter = _todoService.filter;
+  }
+
   @override
   Widget build(BuildContext context) {
-    final todoService = Provider.of<TodoService>(context, listen: false);
-    final accountService = Provider.of<AccountService>(context, listen: false);
-    final currentFilter = todoService.filter;
-    var currentFilterText;
-
-    switch (currentFilter) {
-      case Filter.Done:
-        currentFilterText = 'Done';
-        break;
-
-      case Filter.NotDone:
-        currentFilterText = 'Not Done';
-        break;
-
-      default:
-        currentFilterText = 'All';
-        break;
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text(Configuration.AppName),
         actions: <Widget>[
           Center(
             child: Text(
-              currentFilterText,
+              _getCurrentFilterText(),
               textScaleFactor: 1.5,
               style: new TextStyle(
                 fontSize: 12.0,
@@ -61,26 +56,28 @@ class _TodosScreenState extends State<TodosScreen> {
             itemBuilder: (BuildContext context) {
               return [
                 CheckedPopupMenuItem<Filter>(
-                  checked: currentFilter == Filter.All,
+                  checked: _currentFilter == Filter.All,
                   value: Filter.All,
                   child: const Text('All'),
                 ),
                 CheckedPopupMenuItem<Filter>(
-                  checked: currentFilter == Filter.Done,
+                  checked: _currentFilter == Filter.Done,
                   value: Filter.Done,
                   child: const Text('Done'),
                 ),
                 CheckedPopupMenuItem<Filter>(
-                  checked: currentFilter == Filter.NotDone,
+                  checked: _currentFilter == Filter.NotDone,
                   value: Filter.NotDone,
                   child: const Text('Not Done'),
                 ),
               ];
             },
             onSelected: (Filter filter) {
-              todoService.applyFilter(filter);
+              _todoService.applyFilter(filter);
 
-              setState(() {});
+              setState(() {
+                _currentFilter = filter;
+              });
             },
           ),
           PopupMenuButton<String>(
@@ -95,7 +92,7 @@ class _TodosScreenState extends State<TodosScreen> {
                       context, 'Are you sure to signing out?');
 
                   if (isSignOut) {
-                    accountService.signOut();
+                    _accountService.signOut();
                   }
 
                   break;
@@ -127,7 +124,7 @@ class _TodosScreenState extends State<TodosScreen> {
           Expanded(
             child: TodosList(
               onEdit: (Todo todo) {
-                showTodoForm(todo);
+                _showTodoForm(todo);
               },
             ),
           )
@@ -136,13 +133,26 @@ class _TodosScreenState extends State<TodosScreen> {
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
-          showTodoForm(Todo.initial(accountService.account.userId));
+          _showTodoForm(Todo.initial(_accountService.account.userId));
         },
       ),
     );
   }
 
-  void showTodoForm(Todo todo) {
+  String _getCurrentFilterText() {
+    switch (_currentFilter) {
+      case Filter.Done:
+        return 'Done';
+
+      case Filter.NotDone:
+        return 'Not Done';
+
+      default:
+        return 'All';
+    }
+  }
+
+  void _showTodoForm(Todo todo) {
     showModalBottomSheet(
       context: context,
       builder: (context) => Consumer<SettingsService>(
